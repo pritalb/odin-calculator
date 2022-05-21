@@ -5,6 +5,10 @@ let op = ''
 let canOperateEquation = false
 let operatorInputAllowed = true
 
+function round(num, precision) {
+	return Math.round((num + Number.EPSILON) * (10**precision)) / (10**precision)
+}
+
 function clear() {
 	num1 = ''
 	result = ''
@@ -65,7 +69,6 @@ function updateScreen(out) {
 }
 
 function outputResult(out) {
-	// console.log(result)
 	document.querySelector('#result').innerText = result
 }
 
@@ -76,7 +79,7 @@ function handleInput(key) {
 		if (operatorInputAllowed) {
 			// if an operator is set, then it is a complex equation
 			if (op !== '') {
-				result = operate(num1, op, currentNum)
+				result = round(operate(num1, op, currentNum), 8)
 				outputResult()
 			}
 	
@@ -93,7 +96,7 @@ function handleInput(key) {
 		}
 	} else if (key === '=' || key === 'Enter') {
 		if (canOperateEquation) {
-			result = operate(num1, op, currentNum)
+			result = round(operate(num1, op, currentNum), 8)
 			op = ''
 			currentNum = ''
 			outputResult()
@@ -131,26 +134,8 @@ function main() {
 		})
 	})
 
-	// document.querySelectorAll('.numpad-btn-op').forEach((btn) => {
-	// 	btn.addEventListener('click', () => {
-	// 		handleInput(btn.value)
-	// 	})
-	// })
-
-	// document.querySelector('#numpad-btn-eq').addEventListener('click', () => {
-	// 	handleInput('=')
-	// })
-
-	// document.querySelector('#numpad-btn-clr').addEventListener('click', () => {
-	// })
-
-	// document.querySelector('#numpad-btn-back').addEventListener('click', () => {
-	// 	handleInput('back')
-	// })
-
 	document.addEventListener('keydown', (event) => {
 		handleInput(event.key)
-		// console.log(`key pressed! code: ${event.code}, key: ${event.key}`)
 	})
 
 }
