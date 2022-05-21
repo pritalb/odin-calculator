@@ -3,6 +3,16 @@ let result = ''
 let currentNum = ''
 let op = ''
 
+function clear() {
+	num1 = ''
+	result = ''
+	currentNum = ''
+	op = ''
+
+	document.querySelector('#equation').innerText = ''
+	document.querySelector('#result').innerText = ''
+}
+
 function add(a, b) {
 	return a + b;
 }
@@ -25,6 +35,8 @@ function operate(n1, op, n2) {
 	let b = Number(n2)
 
 	switch (op) {
+		case '':
+			return b;
 		case '+':
 			return add(a, b);
 		case '-':
@@ -38,16 +50,21 @@ function operate(n1, op, n2) {
 	}
 }
 
-function setNumVariables() {
-	num1 = currentNum;
+function setNumVariables(value) {
+	num1 = value;
 	currentNum = ''
 }
 
 function updateScreen(out) {
-	const outputScreen = document.querySelector('#output')
+	const outputScreen = document.querySelector('#equation')
 	const updatedOut = outputScreen.innerText + out
 
 	outputScreen.innerText = updatedOut
+}
+
+function outputResult(out) {
+	console.log(result)
+	document.querySelector('#result').innerText = result
 }
 
 function main() {
@@ -56,25 +73,60 @@ function main() {
 			updateScreen(btn.value)
 			currentNum = currentNum + btn.value
 
-			console.log(currentNum)
+			// console.log(`after pressing $(btn.value), currentNum = ${currentNum}, op = ${op}, num1 = ${num1}, result = ${result}`)
 		})
 	})
 
 	document.querySelectorAll('.numpad-btn-op').forEach((btn) => {
 		btn.addEventListener('click', () => {
+			// if an operator is set, then it is a complex equation
+			if (op !== '') {
+				result = operate(num1, op, currentNum)
+				outputResult()
+			}
+
 			op = btn.value
 			updateScreen(btn.value)
-			setNumVariables()
 
-			console.log(op, currentNum, num1)
+			if (result === '') {
+				setNumVariables(currentNum)
+			} else {
+				setNumVariables(result)
+			}
+
+			console.log(`after pressing $(btn.value), currentNum = ${currentNum}, op = ${op}, num1 = ${num1}, result = ${result}`)
 		})
 	})
 
 	document.querySelector('#numpad-btn-eq').addEventListener('click', () => {
-		const equation = document.querySelector('#output').innerText
+		// const equation = document.querySelector('#equation').innerText
 		result = operate(num1, op, currentNum)
+		op = ''
+		outputResult()
 
-		console.log(`current eq: ${equation}, result: ${result}`)
+		// console.log(`current eq: ${equation}, result: ${result}`)
+	})
+
+	document.querySelector('#numpad-btn-clr').addEventListener('click', () => {
+		clear()
+
+		console.log(`after clear, currentNum = ${currentNum}, op = ${op}, num1 = ${num1}, result = ${result}`)
+	})
+
+	document.querySelector('#numpad-btn-back').addEventListener('click', () => {
+		const equationScreen = document.querySelector('#equation')
+		const currentEqn = equationScreen.innerText
+		const last = currentEqn[currentEqn.length - 1]
+
+		equationScreen.innerText = currentEqn.slice(0, currentEqn.length - 1)
+
+		if (last === '+' || last === '-' || last === '/' || last === '*') {
+			op = ''
+		} else {
+			currentNum = currentNum.slice(0, currentNum.length - 1)
+		}
+
+		console.log(`after pressing back, currentNum = ${currentNum}, op = ${op}, num1 = ${num1}, result = ${result}, last = ${last}`)
 	})
 
 }
